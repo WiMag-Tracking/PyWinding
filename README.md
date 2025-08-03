@@ -1,5 +1,29 @@
-# pywinding
- Automated winding design for micro coils based on [sensor-toolkit](https://github.com/AlexJaeger/sensor-toolkit)
+[![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15705727.svg)](https://doi.org/10.5281/zenodo.15705727)
+
+<p align="center">
+  <a>
+    <img src="https://github.com/WiMag-Tracking/PyWinding/blob/main/docs/img/icon.png?raw=true" width="400">
+  </a>
+
+  <h3 align="center">PyWinding</h3>
+
+  <p align="center">
+    A simulation tool for the design and evaluation of induction coils
+    <br>
+    <a href="https://www.github.com/WiMag-Tracking/PyWinding/issues/new?template=bug.md">Report bug</a>
+    ·
+    <a href="https://www.github.com/WiMag-Tracking/PyWinding/issues/new?template=feature.md&labels=feature">Request feature</a>
+  </p>
+</p>
+
+| **Parameter** | **Description**                 |
+|--------------------|--------------------------------------|
+| $D_o$              | Total diameter of the sensor         |
+| $D_i$              | Outer diameter of sensor core only   |
+| $d_o$              | Total diameter of magnet wire        |
+| $d_i$              | Diameter of the magnetic wire copper |
+| $l_w$              | Length of the winding                |
+| $l_c$              | Length of the core                   |
 
 ## Introduction
 
@@ -17,11 +41,8 @@ Given a set of coil geometry and material specifications the toolkit will:
 ## Required
 Ensure FEMM 4.2 is installed on your system in the default installation directory `C:\femm42`.
 
-Use `test_run_sweep.m` to run a the simulation.
+Use `test_Testbench.py` to run a test simulation.
 Sensor parameters are specified and explained at top of file.
-
-Use `remove_files.m` to remove all .fem and .ans files from the directory.
-
 
 ## Right to use
 If you've been added to this repository feel free to use it in your research project. Do not redistribute this code unless the author gives permission to do so, as this work has not yet been published.
