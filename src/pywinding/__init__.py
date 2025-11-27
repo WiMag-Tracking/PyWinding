@@ -1,7 +1,7 @@
 from .Helmholtz import Helmholtz
-from .Sensor import Sensor
-from .Testbench import Testbench
+from .Coil import Coil
+from .Testbenches import Testbench_B_Sweep
 from .Utility import *
 from .version import __version__
 
-__all__ = ['main', 'Testbench', 'Helmholtz', 'Sensor', 'Timer']
+__all__ = ['main', 'Testbenches.py', 'Helmholtz', 'Coil', 'Timer']

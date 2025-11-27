@@ -1,14 +1,8 @@
 import logging
 import numpy as np
 
-# COPPER MAGNETI WIRE used in simulation
-# 58 referes to conductivity of copper at 20 Celsius (58Ms
-# 3 refers to magnet wire
-# Last 1 refers to number of strands in wire (magnet wire has one strand = 1)
-# Diameter of the strand in mm
-MATERIAL = ('Sensor',1,1,0,0,58,0,0,1,3,0,0,1)
 
-class Sensor:
+class Coil:
     """
     Dimensions in millimetres
     ls  : length of the sensor coil
@@ -32,35 +26,38 @@ class Sensor:
             raise ValueError('Core length must be greater than or equal to sensor length')
 
         # !TODO add method to calculate N based on orthocyclic winding with kwarg : winding = "orthocyclic" , "linear"
-        if explicit_n is False:
-            # Derive maximum number of turns possible in given geometry
-            # Convert diameters to radial thickness of winding
-            winding_thickness = (ods - ids)/2
-            # Calculate the cross sectional area of the coil wire
-            wire_cross_section = np.pi * (odw/2) ** 2
+        
+        # Derive maximum number of turns possible in given geometry
+        # Convert diameters to radial thickness of winding
+        winding_thickness = (ods - ids)/2
+        # Calculate the cross sectional area of the coil wire
+        wire_cross_section = np.pi * (odw/2) ** 2
 
-            # Number of turns to fit into a single layer
-            single_layer_turns = np.floor(pf * (ls/odw))
-            # Number of layers to fit in the given winding thickness
-            radial_layer_turns = np.floor(pf * (winding_thickness/odw))
-
-            nmax = single_layer_turns * radial_layer_turns
-            logging.info('GENERATED COIL SPECIFICATIONS:')
-            logging.info(f'Maximum number of turns: {nmax}')
-            logging.info(f'Number of layers: {radial_layer_turns}')
-            logging.info(f'Number of turns per layer: {single_layer_turns}\n\n')
-        else:
+        # Number of turns to fit into a single layer
+        single_layer_turns = np.floor(pf * (ls/odw))
+        # Number of layers to fit in the given winding thickness
+        radial_layer_turns = np.floor(pf * (winding_thickness/odw))
+        # The maxmum number of turns that fit on the winding for the provided specification
+        nmax = single_layer_turns * radial_layer_turns
+        
+        print('GENERATED COIL SPECIFICATIONS:')
+        print(f'Maximum number of turns: {nmax}')
+        print(f'Number of layers: {radial_layer_turns}')
+        print(f'Number of calculated turns per layer: {single_layer_turns}')
+        if explicit_n is not False:
             nmax = explicit_n
-
+            print(f'Adjusted number of turns for simulation (Overridden by user): {nmax}')
+        print(f'Applied number of turns for simulation: {nmax}\n')
+        ## Cylindrical coordinates for the placement of the material labels in FEMM.
         # Labels are specified using r and z coordinates (cylindrical)
         # Label is in the middle of the sensor winding
-        label_sen_r = 0.5*ids + 0.25*(ods - ids); 
+        label_sen_r = 0.5*ids + 0.25*(ods - ids)
         label_sen_z = 0
 
         # Core label parameters
-        # Label is in the middle of the core winding
+        # Label is in the middle of the core
         label_core_r = 0.5*idc + 0.25*(odc-idc)
-        label_core_z = 0; 
+        label_core_z = 0
 
         self.na = na
         self.ls = ls
@@ -82,11 +79,12 @@ class Sensor:
         self.lacr = label_core_r
         self.lacz = label_core_z
 
-        self.material = [*MATERIAL, self.odw]
+        # see https://www.femm.info/wiki/pyfemm 'material' in the pdf for details each entry below
+        self.material = ('Sensor',1,1,0,0,58,0,0,1,3,0,0,1, self.odw)
 
     def _label(self, canvas):
         canvas.mi.addblocklabel(self.lasr,self.lasz)
-        canvas.mi.addblocklabel(self.lacr,self.lacr)
+        canvas.mi.addblocklabel(self.lacr,self.lacz)
 
     def _draw(self, canvas):
         # Draw rectangles for the regions of material. Rectanges are specified with

@@ -1,33 +1,48 @@
-from scipy.constants import mu_0
 import numpy as np
 
-MATERIAL = ('Transmitter', 1, 1, 0, 0, 58*0.65, 0, 0, 1, 0, 0, 0)
+#MATERIAL = ('Transmitter', 1, 1, 0, 0, 58*0.65, 0, 0, 1, 0, 0, 0)
+#MU_0 = 13.56637061e-6 # Free space magnetic permeability
 
 class Helmholtz:
-    def __init__(self, rad, B, f, lsec, n):
+    """
+       Dimensions in millimetres
+       lsec  : cross-sectional length of the wire used to wind the Helmholtz coil.
+       f : frequency of the magnetic excitation
+       B : magnitude of the magnetic flux density (in tesla) within the bore
+       r : radius of the Helmholtz array
+       n : number of turns on each Helmholtz coil of the array
+       i : the current (in amperes) flowing in the helmholtz array
+       lar : the radius of the Helmholtz array (derived from r)
+       laz : the length of the Helmholtz array, scaled for symmetrical drawing in +ve and -ve z-directions.
+       """
+    def __init__(self, r, B, f, lsec, n):
+        # Locally define the magnetic permeability and FEMM properties for the Helmholtz array
+        self.mu0 = 4 * np.pi * 1e-7
+
+
         self.lsec = lsec
         self.f = f
         self.B = B
-        self.r = rad
+        self.r = r
         self.n = n
         self.i = self.current()
         self.lar = self.r
         self.laz = self.r / 2
 
-        self.material = MATERIAL
+        # see https://www.femm.info/wiki/pyfemm 'material' in the pdf for details each entry below
+        self.material = ('Transmitter', 1, 1, 0, 0, 58, 0, 0, 1, 3, 0, 0, 1, (self.r / np.sqrt(2)))
+
 
     def current(self):
-        r = self.r / 1000 # convert millimetres to metres
-        
-        i = self.B * r / (mu_0 * self.n * (4/5)**(3/2) )
+        r = self.r / 1000 # convert millimetres to metres for the purposes of SI unit calculation
+        i = self.B * r / (self.mu0 * self.n * (0.8)**(1.5) ) # \z
 
         return i
 
     def field(self,r,i,n):
-        mu_0 = 4e-7 * np.pi
-        r = r/1000 # Convert millimeters to meter.
+        r = r/1000 # convert millimetres to metres for the purposes of SI unit calculation
 
-        B = (4/5)^(3/2) * (mu_0*n*i/r)
+        B = (0.8)^(1.5) * (self.mu0 * n * i / r)
         return B
 
     @property
