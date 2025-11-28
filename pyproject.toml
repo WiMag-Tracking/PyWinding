@@ -17,7 +17,7 @@ classifiers = [
     "Programming Language :: Python :: 3",
     "Operating System :: Microsoft :: Windows",
 ]
-license = "MIT"
+license = "BSD-3-Clause"
 license-files = ["LICEN[CS]E*"]
 
 [project.urls]
