@@ -20,12 +20,9 @@ def main():
      """
 
     # This is a default testcoil design.
-    # A 1 meter diameter air core coil consisting of 1 turn.
+    # A small microcoil with submillimeter features containing a permeable magnetic core
     # Expected Results for the testcoil based on theoretical for Sensitivity, Inductance and Resistance:
-    #   - Sensitivity should align to theoretical prediction of S = 4.9348 [volts per tesla per hertz]
-    #   - Effective relative permeability = 1
-    #   - Inductance = 4.15 [microhenries]
-    #   - Resistance = 0.0689 [ohms]
+
     name = 'test_microcoil'
     ls = 6.5                    # ls  : length of the sensor coil
     ods = 0.5                   # ods : outer diameter of the sensor coil

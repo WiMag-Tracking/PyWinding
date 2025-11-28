@@ -43,7 +43,7 @@ def main():
     B_start = 1e-6          # The flux density to begin the sweep
     B_end = 5e-6            # The flux density to end the sweep
     f_test = 1000           # The excitation frequency at which to perform analysis.
-    num_points = 50          # The number of points to use for the sweep
+    num_points = 10          # The number of points to use for the sweep
 
     # Create an instance of the coil to be simulated based on the user-defined specifications above.
     testcoil = Coil(ls,ids,ods,lc,idc,odc,odw,pf,ma,name, odwc=odwc, explicit_n=force_n)

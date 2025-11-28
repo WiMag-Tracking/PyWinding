@@ -4,10 +4,11 @@ build-backend = "hatchling.build"
 
 [project]
 name = "pywinding"
-version = "0.0.1"
-dependencies = ["pyfemm", "matplotlib", "scipy", "tqdm", "datetime"]
+version = "0.0.2"
+dependencies = ["pyfemm", "matplotlib", "scipy", "tqdm", "sciform"]
 authors = [
   { name="Alex Jaeger", email="herman.alex.jaeger@gmail.com" },
+    { name="Cian O Donnell", email="cian.odonnell@tyndall.ie" },
 ]
 description = "A tool for rapidly prototyping wound induction microcoils using Finite Element Method Magnetics (FEMM)."
 readme = "README.md"
