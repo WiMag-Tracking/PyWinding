@@ -1,5 +1,5 @@
 # pywinding
-A tool for rapid design and simulation of wound induction microcoils using pyFEMM Finite Element Method Magnetics (FEMM). Originally based on a Matlab implementation using OctaveFEMM [sensor-toolkit](https://github.com/AlexJaeger/sensor-toolkit)
+A tool for rapid design and simulation of wound induction microcoils using pyFEMM and Finite Element Method Magnetics ([FEMM](https://www.femm.info/wiki/HomePage)). Originally based on a Matlab implementation using OctaveFEMM [sensor-toolkit](https://github.com/AlexJaeger/sensor-toolkit)
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15705727.svg)](https://doi.org/10.5281/zenodo.15705727)
 
