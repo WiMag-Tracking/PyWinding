@@ -1,5 +1,5 @@
 # pywinding
-A tool for rapid design and simulation of wound induction microcoils using pyFEMM and Finite Element Method Magnetics ([FEMM](https://www.femm.info/wiki/HomePage)).
+A simulation toolkit for the design and evaluation of induction microcoils using pyFEMM and Finite Element Method Magnetics ([FEMM](https://www.femm.info/wiki/HomePage)).
 
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15705727.svg)](https://doi.org/10.5281/zenodo.15705727)
 
