@@ -61,7 +61,7 @@ Create an instance of the simulation testbench specifying the test frequency, th
 ```
 Run the simulation by passing the coil geometry to the testbench:
 ```python
->>> results = tb.simulate(testcoil, clean_up_femm=False) # Specify the program not to delete the FEMM files ocne complete
+>>> results = tb.simulate(testcoil, clean_up_femm=False) # Specify the program not to delete the FEMM files once completed
 ```
 Multiple instances of the FEMM tool should launch in the background. The number of instances = number of CPU cores on the system.
 
@@ -70,7 +70,7 @@ Once the simulation is complete you can view the results to console using:
 >>> tb.print_results()   # Print the coil parameters to the console
 ```
 Plotting the results can be performed using:
-```
+```python
 >>> tb.plot_results()    # Plot the coil response using matplotlib
 ```
 The results can also be saved to a ```.mat``` file using:
