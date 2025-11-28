@@ -65,7 +65,7 @@ Run the simulation by passing the coil geometry to the testbench:
 ```
 Multiple instances of the FEMM tool should launch in the background. The number of instances = number of CPU cores on the system.
 
-Once the simulation is complete you can view the results to console using:
+Once the simulation is complete you can print the results to the console using:
 ```python
 >>> tb.print_results()   # Print the coil parameters to the console
 ```
