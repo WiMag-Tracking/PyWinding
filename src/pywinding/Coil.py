@@ -16,8 +16,11 @@ class Coil:
     pf : packing factor (0.9 for circular wire)
     ma : string representing the material of the core
     explicit_n : if False, n is computed internally, if integer value is provided, it is used as the number of turns.
+
+    Default design is a very thin 1 meter diameter coil with an air core.
+    The sensitivity of this coil should match the theoretical result of 4.9348 V/(T.Hz)
     """
-    def __init__(self,ls,ids,ods,lc,idc,odc,odw,pf,ma,na,odwc=None,explicit_n=False):
+    def __init__(self,ls=1,ids=999.9,ods=1000.1,lc=1,idc=0,odc=999.9,odw=1,pf=1,ma='Air',na='default_1meter_diameter_aircoil',odwc=1,explicit_n=1):
         if odc != ids:
             logging.error(f'Core outer diameter: {odc} and coil inner diameter: {ids} must match')
             raise ValueError('Core outer diameter and coil inner diameter must match')

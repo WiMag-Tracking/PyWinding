@@ -9,6 +9,18 @@ import copy
 from scipy.io import savemat
 from datetime import datetime
 from .Utility import cleanup
+import matplotlib.pyplot as plt
+import matplotlib as mpl
+from sciform import Formatter
+from .Utility import cleanup
+mpl.rcParams['axes.formatter.useoffset'] = False
+
+
+sform = Formatter(
+    round_mode="sig_fig", exp_mode="engineering", ndigits=6
+)
+
+
 # Default settings for generating FEMM .fem magnetic problems.
 SIM_DEFAULTS = {
     'units'     :   'millimeters',  # units
@@ -20,8 +32,10 @@ SIM_DEFAULTS = {
 
 path_prefix = 'temp/'
 
+# A testbench class to perform a magnitude sweep of a user defined coil design
+# If no initialisers are provided by the user then the default stimulus frequency is 1000 Hz and evaluates the sensor over three flux density levels between 1 and 3 uT
 class Testbench_B_Sweep():
-    def __init__(self, freq=1e3, B_start=1e-6, B_end=3e-6, num_points=3, cleanup=False, **kwargs):
+    def __init__(self, freq=1e3, B_start=1e-6, B_end=3e-6, num_points=3, **kwargs):
         self.__simulator = Magneto()
         self.freq = freq
         self.num_points = num_points
@@ -30,6 +44,7 @@ class Testbench_B_Sweep():
         # Default settings for FEMM problems
         self.__sim_kwargs = {**{'freq' : self.freq}, **{k : kwargs.get(k, v) for k,v in SIM_DEFAULTS.items()}}
         self.path = None
+        self.results = None
         if not os.path.isdir("temp"):
             os.mkdir("temp")
 
@@ -40,7 +55,7 @@ class Testbench_B_Sweep():
 
         return f"{path_prefix}{sim_file_name}"
 
-    def simulate(self, sen):
+    def simulate(self, sen, clean_up_femm=True):
 
         # build Helmholtz for given test flux density at a scale of 100x the (length+diameter) of the sensor.
         helm = Helmholtz(100 * (sen.ls + sen.ods), self.Bs[0], self.freq, 5, 1 )
@@ -64,7 +79,7 @@ class Testbench_B_Sweep():
         ## Create Simulation Files
         print(f'GENERATING FEMM SWEEP FROM {self.Bs[0]} T to {self.Bs[-1]} T over {len(self.Bs)} points at {self.freq} Hz\n')
         # Duplicate the .fem files for air and cored sensors, creating an addition two .fem files for each field amplitude being simulated.
-        print("STARTED GENERATING SIMULATION FILES\n")
+        print("STARTED GENERATING SIMULATION FILES")
         if len(self.Bs) > 1:
             for sensor, path, paths in zip([sensor_air, sensor_core], [path_air, path_core], [path_airs, path_cores]):
                 self.__simulator.openfemm(True)
@@ -80,44 +95,47 @@ class Testbench_B_Sweep():
                     paths.append(str(sim_file_name))
                 
                 self.__simulator.closefemm()
-        print("FINISHED GENERATING SIMULATION FILES\n")
+        print("FINISHED GENERATING SIMULATION FILES")
+
+        print("ASSIGNING SIMULATION FILES TO PROCESSES")
+
         #########################################################
-        # CREATE FUTURES
-        print("ASSIGNING SIMULATION FILES TO PROCESSES\n")
-        pbar = tqdm(total=self.num_points*2, desc='Simulation Progress')  # Init pbar  # Increments counter
+        # Distribute the simulations to different processes on the machine
+        # All available CPU cores will be used by default.
         with concurrent.futures.ProcessPoolExecutor(max_workers=None) as executor:
             # A list to store futures for data parsing
-
             futures_processes = []
             for path_air, path_core in zip(path_airs, path_cores):
                futures_processes.append(executor.submit(run,  sensor_air,  path_air ))
                futures_processes.append(executor.submit(run,  sensor_core, path_core))
-            print("\nWAITING FOR SIMULATION PROCESSES TO COMPLETE...", end="")
-
+            print("WAITING FOR SIMULATION PROCESSES TO COMPLETE...")
+            pbar = tqdm(total=self.num_points * 2, desc='Simulation Progress')  # Init pbar  # Increments counter
             for _ in as_completed(futures_processes):
                 pbar.update(n=1)  # Increments counter
-            concurrent.futures.wait(futures_processes)
+        pbar.close()
 
-        print("SIMULATION COMPLETE\n")
+        print("SIMULATION COMPLETE")
         futures_air =  futures_processes[0::2]
         futures_core = futures_processes[1::2]
         #########################################################
         # PARSE
-        print("EXTRACTING RESULTS...\n")
+        print("EXTRACTING FIELD RESULTS...", end='')
         B_air =  np.array([f.result()['B'] for f in futures_air])
         B_core = np.array([f.result()['B'] for f in futures_core])
         v_air =  np.array([f.result()['V'] for f in futures_air])
         v_core = np.array([f.result()['V'] for f in futures_core])
-
         # Calculate the sensitivity (in V per T per Hz) and the effective relative magnetic permeabilty of the coil at each operating con
         sensitivity = v_core / (B_air * self.freq)
         mu_eff = B_core / B_air
+        print("DONE")
 
+        print("EXTRACTING COIL LR PARAMETERS...", end='')
         # Performance a circuit analysis of the sensor in order to extract L and R parameters
         LR_PARAMS = self.__extract(path_air, path_core, self.freq, sen.odwc)
+        print("DONE")
 
         # Results structure contains raw values as well as means.
-        result = {
+        self.results = {
             'Name'              : sen.na,
             'V'                 : v_core,
             'B'                 : B_air,
@@ -131,21 +149,22 @@ class Testbench_B_Sweep():
             'mu_effs'           : mu_eff,
             'mu_eff_mean'       : np.mean(mu_eff),
             'mu_eff_std'        : np.std(mu_eff),
-            'path_air'          : path_airs,
-            'path_core'         : path_cores
+            'paths_air'          : path_airs,
+            'paths_core'         : path_cores
         }
 
-        print("COIL MAGNETIC PARAMETERS:")
-        print("Mean Sensitivity [Volts per (Tesla Hz)] = " + str(result['sensitivity_mean']) + " Standard Deviation = " + str(result['sensitivity_std']))
-        print("Effective permeability = "+ str(result['mu_eff_mean']) + " Standard Deviation = " + str(result['mu_eff_std']))
-
-        if self.cleanup:
+        if clean_up_femm is True:
             cleanup()
 
-        return result
+        return self.results
 
-    def save_result(self,result):
-        savemat(result['Name'] + f"_T_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mat", result)
+    def save_results(self):
+        if self.results is not None:
+            save_path = self.results['Name'] + f"_T_{datetime.now().strftime('%Y-%m-%d_%H-%M-%S')}.mat"
+            print("\nSAVING RESULTS TO", save_path)
+            savemat(save_path, self.results)
+        else:
+            print("No results saved, need to run simulation first.")
 
     def __draw(self):
 
@@ -213,13 +232,60 @@ class Testbench_B_Sweep():
 
         self.__simulator.closefemm()
 
-        print("COIL ELECTRICAL PARAMETERS:")
-        print("Sensor Air:")
-        print(f"Resistance = {parameters['resistance_air']} [Ohms], Inductance = {parameters['inductance_air']} [Henries]")
-        print("Sensor Core:")
-        print(f"Resistance = {parameters['resistance_core']} [Ohms], Inductance = {parameters['inductance_core']} [Henries]\n")
-
         return parameters
+
+    def print_results(self):
+        if self.results is not None:
+            print("\nCOIL MAGNETIC PARAMETERS:")
+            print("Mean Sensitivity (core) = " + ("%s [volts per tesla per hertz)]" % sform(self.results['sensitivity_mean'])))
+            print("Sensitivity standard Deviation = " + ("%s" % sform(self.results['sensitivity_std'])))
+            print("Effective permeability μ (core)= " + ("%s" % sform(self.results['mu_eff_mean'])))
+            print("Standard Deviation = " + ("%s" % sform(self.results['mu_eff_std'])))
+
+            print("\nCOIL ELECTRICAL PARAMETERS:")
+
+            print("Resistance (air): %s [ohms]" % sform(self.results['Rair']))
+            print("Resistance (core): %s [ohms]" % sform(self.results['Rcore']))
+            print("Inductance (air): %s [henries]" % sform(self.results['Lair']))
+            print("Inductance (core): %s [henries]" % sform(self.results['Lcore']))
+        else:
+            print("No results saved, need to run simulation first.")
+
+    def plot_results(self):
+        if self.results is not None:
+            ## Plot the sensor response over the applied field
+            plt.figure()
+            plt.plot(self.results['B'], self.results['V'], 'bo')
+            plt.xlabel("Applied magnetic flux density magnitude [T]")
+            plt.ylabel("Voltage amplitude [V]")
+            plt.title("Sensor voltage vs applied magnetic flux density")
+            left = self.results['B'][0]
+            top = self.results['V'][-1]
+            plt.text(left, top, "Mean Sensitivity [V/(T.Hz)] = " + '%.7f' % (self.results['sensitivity_mean']))
+            plt.grid(True)
+            # ax.get_yaxis().get_major_formatter().set_useOffset(False)
+            plt.show()
+
+            # Plot the sensor sensitivity [in V/(T.Hz)] vs. the applied magnetic field
+            plt.figure()
+            plt.plot(self.results['B'], self.results['sensitivities'], 'bo')
+            plt.xlabel("Applied magnetic flux density magnitude [T]")
+            plt.ylabel("Coil sensitivity [V/(T.Hz)]")
+            plt.title("Coil sensitivity vs applied magnetic flux density")
+            plt.grid(True)
+            plt.show()
+
+            # Plot the effective core permeability vs applied magnetic field
+            plt.figure()
+            plt.plot(self.results['B'], self.results['mu_effs'], 'bo')
+            plt.xlabel("Applied magnetic flux density magnitude [T]")
+            plt.ylabel("Effective permeability")
+            plt.title("Effective permeability vs applied magnetic flux density")
+            plt.grid(True)
+            plt.show()
+        else:
+            print("Nothing to plot, need to run simulation first.")
+
 
 def run( sen, path ):
     """
@@ -251,3 +317,4 @@ def run( sen, path ):
     simulator.closefemm()
     
     return result
+
