@@ -1,0 +1,5 @@
+pyfemm      # Allows python to talk to FEMM
+matplotlib  # Used for plotting the results
+scipy       # Used for saving .mt files for the results
+tqdm        # Used to implement a simulation loading progress bar
+sciform     # Used to format result in engineering notation for easy interpretation from the console (i.e. 10^(3n) where n is an integer)
