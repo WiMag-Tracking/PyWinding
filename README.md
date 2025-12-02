@@ -5,13 +5,13 @@ A simulation toolkit for the design and evaluation of induction microcoils using
 
 ## Overview
 
-This software toolkit simplifies the design and simulation of induction microcoils. The toolkit leverages the pyFEMM interface of the Finite Element Method Magnetics software (https://www.femm.info/wiki/HomePage) to allow users to rapidly characterise the magnetic and electrical characteristics of induction microcoils containing permeable magnetic cores. The effect of shape anisotropy of the magnetic material is calculated to yield an *effective permeability* of the magnetic core.
+This software toolkit simplifies the design and simulation of induction microcoils. The toolkit leverages the pyFEMM interface of the Finite Element Method Magnetics software (https://www.femm.info/wiki/HomePage, https://www.femm.info/wiki/pyfemm) to allow users to rapidly characterise the magnetic and electrical characteristics of induction microcoils containing permeable magnetic cores. The effect of shape anisotropy of the magnetic material is calculated to yield an *effective permeability* of the magnetic core.
 
 Given a set of user defined coil geometry and simulation parameters the toolkit will:
 1. Calculate the remaining mechanical parameters of the coil
-2. Build the sensor geometry and a virtual Helmholtz array to apply the stimulus field
-3. Apply a magnitude sweep of magnetic flux densities and record the microcoil responses
-5. Extract the electrical parameters of the sensor, Resistance (Ohms) and Inductance (Henries)
+2. Build the coil geometry and build a virtual Helmholtz array with which to apply the stimulus field to the coil
+3. Sweep the coil with a set of magnetic flux densities and record the coil's voltage and magnetic response
+5. Extract the electrical parameters of the coil, Resistance (Ohms) and Inductance (Henries)
 6. Print and plot the results on-screen
 7. Save the results to a .mat file
 
@@ -24,25 +24,26 @@ Install the latest version of pywinding from PyPi with:
 ```python
 python -m pip install pywinding
 ```
+Dependancies are automatically installed.
 
 ##  Usage (command-line)
 
 The pywinding tool can be used directly from the Python interpreter. 
 
-From the interpreter import the pywinding classes for defining the geometry of a coil and the testbench for which to evaluate the sensor:
+From the interpreter import the pywinding classes for defining the geometry of a coil and the testbench for which to evaluate the coil's characteristics:
 ```python
 >>> from pywinding import Coil, Testbench_B_Sweep
 ```
 Define the geometry of an induction microcoil. An example definition is given below
 ```python
 >>> name = 'test_microcoil'
->>> ls = 6.5                    # ls  : length of the sensor coil (millimeters)
->>> ods = 0.5                   # ods : outer diameter of the sensor coil (millimeters)
->>> ids = 0.09                  # ids : inner diameter of the sensor coil (millimeters)
+>>> ls = 6.5                    # ls  : length of the  coil (millimeters)
+>>> ods = 0.5                   # ods : outer diameter of the coil (millimeters)
+>>> ids = 0.09                  # ids : inner diameter of the coil (millimeters)
 >>> lc = 9                      # lc  : length of the magnetic core (millimeters)
 >>> odc = ids                   # idc : inner diameter of the magnetic core (millimeters, typically 0)
 >>> idc = 0                     # odc :  outer diameter of the magnetic core (millimeters, typically same as ids)
->>> odw = 0.025                 # odw : outer diameter of the wire used to wind the sensor including insulation (millimeters)
+>>> odw = 0.025                 # odw : outer diameter of the wire used to wind the coil including insulation (millimeters)
 >>> odwc= 0.025                 # odwc : outer diameter of the copper wire cross section only (millimeters)
 >>> pf = 1                      # pf  : The packing factor (scalar between 0.0 and 1.0)
 >>> ma = 'Hiperco-50'           # ma  : The name of the material used in the core of the microcoil  (must be defined within the FEMM program)
