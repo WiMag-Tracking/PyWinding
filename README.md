@@ -115,3 +115,5 @@ Simulation results are typically within 5-10% of the real-world measurements whi
 This tool should therefore be used as a guide to inform the feasibility of a microcoil design given an application's mechanical and electrical contraints. 
 
 The authors assume no responsibitlity for the accuracy of this simulation tool. If the use of this toolkit contributes to a publication then please acknowledge the authors by name in that publication.
+
+[1] H. A. Jaeger, C. O'Donnell, M. Abo Mahmoud, S. Coombes, R. Burke and D. O'Hare, “PyWinding - A simulation tool for the design and evaluation of induction microcoils”. Zenodo, Jun. 20, 2025. doi: 10.5281/zenodo.15705727.
