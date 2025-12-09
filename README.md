@@ -103,7 +103,7 @@ The effective permeability of the core is a proxy for the sensitivity of the mic
 
 ## Screenshot of FEMM simulation environment
 The figure below shows the solution to a single `.fem` simulation file. The leftmost border represents the axis of symmetry of the FEMM axisymmetric magnetics problem.
-The microcoil to be simulated is located along this axis. The virtual Helmholtz array dwarfs the microcoil by having a radius ~100x larger than the microcoil. This ensures a uniform applied magnetic flux density at the sensor location.
+The microcoil to be simulated is located along this axis. The virtual Helmholtz array dwarfs the microcoil by having a radius ~100x larger than the microcoil. This ensures a uniform applied magnetic flux density at the microcoil location.
 ![](doc/helmholtz_coil.png)
 
 
