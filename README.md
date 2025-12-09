@@ -82,13 +82,13 @@ The results can also be saved to a ```.mat``` file using:
 ## Tests
 The above usage example is available as a script in the ```tests``` folder of the package.
 
-## Example plots for 0 to 2 mT sweep
+## Example plots for 0 to 2 mT sweep using 100 data points
 
 ![](doc/test_microcoil_response.svg)
 Response begins to flatten with increases in applied flux density as the core begins to saturate
 
 ![](doc/test_microcoil_sensitivity.svg)
-The sensitivity of the microcoil peaks at an applied flux density of 0.75 mT. Sensitivity plummets for larger values as the core begins saturates.
+The sensitivity of the microcoil peaks at an applied flux density of 0.75 mT. Sensitivity plummets for larger values as the core begins to saturate.
 
 ![](doc/test_microcoil_effectivepermeability.svg)
 The effective permeability of the core is a proxy for the sensitivity of the microcoil.
