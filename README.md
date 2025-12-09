@@ -26,6 +26,14 @@ python -m pip install pywinding
 ```
 Dependancies are automatically installed.
 
+## Getting started
+Examples is available as a script in the ```tests``` folder of the package and can be executed as python scripts:
+e.g.:
+```python
+python test_microcoil.py
+```
+A step-by-step explanation of how the example is executed is explained in the next section.
+
 ##  Usage (command-line)
 
 The pywinding tool can be used directly from the Python interpreter. 
