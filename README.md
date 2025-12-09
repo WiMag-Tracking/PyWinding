@@ -82,6 +82,22 @@ The results can also be saved to a ```.mat``` file using:
 ## Tests
 The above usage example is available as a script in the ```tests``` folder of the package.
 
+## Example plots for 0 to 2 mT sweep
+
+![](doc/test_microcoil_response.svg)
+Response begins to flatten with increases in applied flux density as the core begins to saturate
+
+![](doc/test_microcoil_sensitivity.svg)
+The sensitivity of the microcoil peaks at an applied flux density of 0.75 mT. Sensitivity plummets for larger values as the core begins saturates.
+
+![](doc/test_microcoil_effectivepermeability.svg)
+The effective permeability of the core is a proxy for the sensitivity of the microcoil.
+
+## Screenshot of FEMM simulation environment
+The figure below shows the solution to one of the produced by simulating a single `.fem` file. The leftmost border represents the axis of symmetry of the FEMM axisymmetric magnetics problem.
+The microcoil to be simulated is located along this axis. The virtual Helmholtz array dwarfs the microcoil by having a radius ~100x larger than the microcoil. This ensures a uniform applied magnetic flux density at the sensor location.
+![](doc/helmholtz_coil.png)
+
 
 ## Accuracy of the tool
 Pywinding has been validated by comparing simulation results with those of corresponding physically realised microcoils. 
