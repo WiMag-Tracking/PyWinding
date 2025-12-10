@@ -116,4 +116,5 @@ This tool should therefore be used as a guide to inform the feasibility of a mic
 
 The authors assume no responsibitlity for the accuracy of this simulation tool. If the use of this toolkit contributes to a publication then please acknowledge the authors by name in that publication.
 
+## Citation
 [1] H. A. Jaeger, C. O'Donnell, M. Abo Mahmoud, S. Coombes, R. Burke and D. O'Hare, “PyWinding - A simulation tool for the design and evaluation of induction microcoils”. Zenodo, Jun. 20, 2025. doi: 10.5281/zenodo.15705727.
