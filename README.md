@@ -1,6 +1,8 @@
 # pywinding
 A simulation toolkit for the design and evaluation of induction microcoils using pyFEMM and Finite Element Method Magnetics ([FEMM](https://www.femm.info/wiki/HomePage)).
 
+Originally based on a Matlab implementation [Sensor Toolkit](https://github.com/AlexJaeger/sensor-toolkit).
+
 [![DOI](https://zenodo.org/badge/DOI/10.5281/zenodo.15705727.svg)](https://doi.org/10.5281/zenodo.15705727)
 
 ## Overview
